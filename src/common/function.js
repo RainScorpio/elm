@@ -30,6 +30,8 @@ export const getImageURL =  function (imageHash, size) {
 
 // 使用vuejs中的mixin 方式获取图片地址
 export const getImgPath = {
+
+  // 参考 https://cn.vuejs.org/v2/guide/mixins.html#基础
   methods: {
     getImgPath(imageHash, size) {
       if (!imageHash) {

@@ -392,165 +392,170 @@ export default {
 
   @import "../../css/mixin";
 
- /* msite页的头部 */
-  .msite-header {
-    background-image: linear-gradient(90deg, #0af, #0085ff);
-    color: #fff;
-    @include property-of-rem(padding, 20px, 28px);
 
-    /* 地址, 天气 */
-    &>.header-top {
-      @include flex-content();
-      @include property-of-rem(margin-bottom, 14px);
+  .msite {
 
 
-      /* 地址 */
-      &>.location-name {
-        @include flex-content(flex-start);
 
-        @include font-dpr(18px);
-        font-weight: 700;
-        width: 60%;
-        @include property-of-rem(height,69px);
-        /* 地址名称 */
-        & span {
-          margin: pxToRem(0px, 10px);
-          max-width: 80%;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          display: inline-block;
-          vertical-align: bottom;
-        }
+   /* msite页的头部 */
+    .msite-header {
+      background-image: linear-gradient(90deg, #0af, #0085ff);
+      color: #fff;
+      @include property-of-rem(padding, 20px, 28px);
 
-      }
-
-      /* 天气 */
-      & .weather {
+      /* 地址, 天气 */
+      &>.header-top {
         @include flex-content();
-        @include font-dpr(12px);
-       img {
-          @include property-of-rem(width, 55px);
-          @include property-of-rem(height, 55px);
-         @include property-of-rem(margin-left, 8px);
+        @include property-of-rem(margin-bottom, 14px);
+
+
+        /* 地址 */
+        &>.location-name {
+          @include flex-content(flex-start);
+
+          @include font-dpr(18px);
+          font-weight: 700;
+          width: 60%;
+          @include property-of-rem(height,69px);
+          /* 地址名称 */
+          & span {
+            margin: pxToRem(0px, 10px);
+            max-width: 80%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: bottom;
+          }
+
         }
-      }
-    }
 
-    /* 搜索 */
-    & .search {
-      @include property-of-rem(margin-bottom, 14px);
-      .link {
-        width: 100%;
-        @include property-of-rem(height, 72px);
-        @include flex-content(center);
-        @include font-dpr(13px);
-        background-color: #fff;
-        color: rgb(102, 102, 102);
-        span {
-          @include property-of-rem(margin-left, 10px);
-        }
-      }
-    }
-
-    /* 热门搜索词汇 */
-    & .hot {
-
-
-      padding-bottom: pxToRem(10px);
-
-      .keyword {
-        white-space: nowrap;
-        overflow-x: auto;
-
-        a {
-          color: #fff;
-          @include property-of-rem(margin-right, 30px);
+        /* 天气 */
+        & .weather {
+          @include flex-content();
+          @include font-dpr(12px);
+         img {
+            @include property-of-rem(width, 55px);
+            @include property-of-rem(height, 55px);
+           @include property-of-rem(margin-left, 8px);
+          }
         }
       }
 
-
-
-
-    }
-
-
-  }
-
-
-  /* 分类 */
-  .entries {
-    background-color: #fff;
-    position: relative;
-    height: pxToRem(354px);
-    .entries-page {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: none;
-      /* TODO: transform渲染效率比定位高??? */
-      transform: translateX(-100%);
-      /*top: 0;*/
-      /*left: 0;*/
-      &.active {
-        display: block;
-        transform: none;
+      /* 搜索 */
+      & .search {
+        @include property-of-rem(margin-bottom, 14px);
+        .link {
+          width: 100%;
+          @include property-of-rem(height, 72px);
+          @include flex-content(center);
+          @include font-dpr(13px);
+          background-color: #fff;
+          color: rgb(102, 102, 102);
+          span {
+            @include property-of-rem(margin-left, 10px);
+          }
+        }
       }
 
-        &::after {
-          content: '';
-          display: table;
-          clear: both;
-        }
+      /* 热门搜索词汇 */
+      & .hot {
 
-        a {
-          display: block;
-          float: left;
-          width: 25%;
-          text-align: center;
-          margin-top: pxToRem(22px);
-          img {
-            width: pxToRem(90px);
-            height: pxToRem(90px);
+
+        padding-bottom: pxToRem(10px);
+
+        .keyword {
+          white-space: nowrap;
+          overflow-x: auto;
+
+          a {
+            color: #fff;
+            @include property-of-rem(margin-right, 30px);
           }
         }
 
-    }
 
-    .dots {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
 
-      .dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 4px;
-        background-color: #ccc;
-        &.active {
-          background-color: #555;
-        }
+
       }
 
+
     }
 
 
+    /* 分类 */
+    .entries {
+      background-color: #fff;
+      position: relative;
+      height: pxToRem(354px);
+      .entries-page {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: none;
+        /* TODO: transform渲染效率比定位高??? */
+        transform: translateX(-100%);
+        /*top: 0;*/
+        /*left: 0;*/
+        &.active {
+          display: block;
+          transform: none;
+        }
+
+          &::after {
+            content: '';
+            display: table;
+            clear: both;
+          }
+
+          a {
+            display: block;
+            float: left;
+            width: 25%;
+            text-align: center;
+            margin-top: pxToRem(22px);
+            img {
+              width: pxToRem(90px);
+              height: pxToRem(90px);
+            }
+          }
+
+      }
+
+      .dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+
+        .dot {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 4px;
+          background-color: #ccc;
+          &.active {
+            background-color: #555;
+          }
+        }
+
+      }
+
+
+    }
+
+    /* 推荐商家 */
+    h3.list-title {
+      margin-top: pxToRem(20px);
+      font-weight: 600;
+      @include font-dpr(16px);
+
+      @include property-of-rem(padding, 32px, 20px, 0px);
+      background-color: #fff;
+
+
+    }
+
   }
-
-  /* 推荐商家 */
-  h3.list-title {
-    margin-top: pxToRem(20px);
-    font-weight: 600;
-    @include font-dpr(16px);
-
-    @include property-of-rem(padding, 32px, 20px, 0px);
-    background-color: #fff;
-
-    
-  }
-
-
 
 </style>
