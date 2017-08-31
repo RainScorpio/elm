@@ -14,7 +14,7 @@
       <div class="shop-message">
 
         <!-- 商家基本信息 -->
-        <div class="shop-base">
+        <section class="shop-base">
 
           <div class="base-first">
             <h3 class="shop-name">{{shop.name}}</h3>
@@ -53,13 +53,33 @@
             </div>
           </div>
 
-        </div>
+        </section>
         <!-- 商家基本信息 结束-->
 
         <!-- 优惠 -->
-        <div class="shop-discount">
+        <section class="shop-discount">
 
-        </div>
+          <!-- 活动数量 -->
+          <div class="activity-count" v-if="shop.activities.length > 2" @click="activityCount">
+
+            <span>{{shop.activities.length}}个活动</span>
+            <i class="fa fa-caret-down"></i>
+          </div>
+
+          <!-- 商家活动  -->
+          <div class="activities">
+            <div class="activitie-item" v-for="(active, index) in shop.activities" :key="active.id" v-show="index < 2">
+              <span class="icon_name" :style="{backgroundColor: '#'+active.icon_color}">{{active.icon_name}}</span>
+              <span class="active-tips">{{active.tips}}</span>
+
+            </div>
+
+
+
+          </div>
+          <!-- 商家活动 结束 -->
+
+        </section>
         <!-- 优惠 结束-->
 
       </div>
@@ -95,7 +115,14 @@ export default {
   data() {
     return {
       shops:[], // 商铺列表
+      activeShow: false,
     }
+  },
+
+  beforeMount() {
+
+
+
   },
 
   mounted() {
@@ -107,6 +134,29 @@ export default {
 //       console.log('商家列表');
 //       console.log(error);
     })
+  },
+
+  methods: {
+
+//    活动数量点击方法
+    activityCount: function(ev){
+
+      ev = ev || window.event;
+
+//      获取活动item
+      var activities = ev.currentTarget.nextElementSibling.children;
+
+      // 从第3个活动开始设置display
+      for (var i = 2; i < activities.length; i++) {
+        console.log(activities[i].style.display);
+
+        activities[i].style.display = (activities[i].style.display === 'none') ? 'block' : 'none';
+
+
+      }
+
+    }
+
   },
 
   mixins: [getImgPath],
@@ -125,7 +175,7 @@ export default {
     /* 列表项 */
     .list-item {
 
-      @include flex-content();
+      @include flex-content(space-between, flex-start);
       @include font-dpr(11px);
       color: #666;
 
@@ -152,6 +202,7 @@ export default {
         /* 商家基本信息 */
         .shop-base {
           border-bottom: 1px solid #ddd;
+          margin-bottom: pxToRem(10px);
 
           .base-first, .base-second, .base-third {
             @include flex-content();
@@ -174,6 +225,7 @@ export default {
 
             .supports {
               span.sup {
+                color: #999;
                 @include font-dpr(12px);
                 border: 1px solid rgb(221, 221, 221);
                 border-radius: pxToRem(4px);
@@ -215,17 +267,64 @@ export default {
               }
             }
 
+            .distribution-time {
+              color: #999;
+            }
+
 
 
 
           }
 
-
-
         }
 
+        /* 优惠 */
         .shop-discount {
-          text-align: right;
+          position: relative;
+
+          /* 商家活动 */
+          .activities {
+            width: pxToRem(560px);
+
+            .activitie-item {
+              @include flex-content(flex-start);
+
+              margin-top: pxToRem(5px);
+              @include font-dpr(13px);
+
+              .icon_name {
+                @include font-dpr(12px);
+                margin-right: pxToRem(12px);
+                border-radius: pxToRem(4px);
+                width: pxToRem(32px);
+                height: pxToRem(32px);
+                text-align: center;
+                color: #fff;
+                @include property-of-rem(padding, 2px, 3px);
+              }
+
+              .active-tips {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              }
+
+            }
+
+
+
+
+
+          }
+
+          /* 活动数量 */
+          .activity-count {
+            position: absolute;
+            right: 0;
+            color: #999;
+
+          }
+
 
         }
 
