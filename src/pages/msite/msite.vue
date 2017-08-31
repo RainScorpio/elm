@@ -1,7 +1,7 @@
 <template>
   <div class="msite">
 
-    <div class="wrap" v-if="locationName">
+    <div class="wrap" v-if="hasData">
       <!-- 头部 -->
       <header class="msite-header">
 
@@ -40,7 +40,7 @@
         <div class="hot">
 
           <div class="keyword">
-            <router-link to="" v-for="a in hotSearchWords">{{a.word}}</router-link>
+            <router-link to="" v-for="(a, index) in hotSearchWords" :key="index">{{a.word}}</router-link>
           </div>
 
 
@@ -55,25 +55,48 @@
 
       <div class="entries">
 
-        <div class="entries-page">
-          <div class="entries-item">
-            <!--<router-link to="" v-for="n in 8">-->
-              <!--<img :src="imgURL(entries[n-1].image_hash, '90x90')" alt="">-->
+        <div>
+          <!-- 分类第一页 -->
+          <div class="entries-page  active">
 
-            <!--</router-link>-->
+            <router-link to="" v-for="(n, index) in 8" :key="index">
+              <img :src="getImgPath(entries[index].image_hash, '90x90')" alt="">
+              <p>{{entries[index].name}}</p>
+
+            </router-link>
+          </div>
+          <!-- 分类第2页 -->
+          <div class="entries-page">
+
+            <router-link to="" v-for="(n, index) in (entries.length - 8)" :key="index">
+
+              <img :src="getImgPath(entries[index + 8].image_hash, '90x90')" alt="">
+              <p>{{entries[index + 8].name}}</p>
+            </router-link>
+
+
           </div>
 
+        </div>
 
+        <div class="dots">
 
+          <div class="dot active"></div>
+          <div class="dot"></div>
 
         </div>
-        <div class="entries-page"></div>
 
 
       </div>
 
       <!-- 分类结束 -->
 
+      <!-- 推荐商家 标题-->
+      <h3 class="list-title">推荐商家</h3>
+
+      <!-- 商家列表 组件-->
+      <!-- 商家列表 组件结束-->
+      <shop-list></shop-list>
 
     </div>
 
@@ -101,7 +124,8 @@ import {
 } from '@/data/getData';
 
 import {
-  getImageURL
+  getImageURL,
+  getImgPath
 } from '@/common/function';
 
 import shopList from '@/components/shopList';
@@ -111,6 +135,7 @@ export default {
   name: 'msite',
   data() {
     return {
+      hasData: false,
       latitude: 0,
       longitude: 0,
       locationName: '获取地址中', // 当前定位地址名称
@@ -122,12 +147,15 @@ export default {
       error: '',
       hotSearchWords: [], // 热门搜索词汇
       entries: [], // 首页分类
-      shops:[], // 商铺列表
+
+      preClientX: 0, // 记录手指移动时上一次的位置.
     }
   },
   components: {
     shopList
   },
+
+  mixins: [getImgPath],
 
 
 
@@ -152,6 +180,7 @@ export default {
     getAddress().then(response => {
 
       this.locationName = response.name;
+      this.hasData = true;
 
       this.SAVE_GEOHASH = response.geohash;
       console.log('s', this.SAVE_GEOHASH);
@@ -193,14 +222,7 @@ export default {
      });
 
 
-     getShopList(0).then(respnse => {
-        this.shops = respnse;
-     }).catch(error => {
 
-       //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
-//       console.log('商家列表');
-//       console.log(error);
-     })
 
 
 
@@ -287,7 +309,74 @@ export default {
 
   methods: {
     // 在模板中只能用vue实例的方法, 不能直接用js方法.
+    // 可以使用mixins中的getImgPath替代.
     imgURL: getImageURL,
+
+    start: function (event) {
+
+      event = event || window.event;
+      // 获取.entries-page元素
+      var touchPage = event.target;
+      if (!touchPage.classList.contains('entries-page')) {
+        touchPage = touchPage.offsetParent;
+      }
+      var sibling = touchPage.nextElementSibling || touchPage.previousElementSibling;
+      sibling.style.display = 'block';
+
+      console.log('dfwe');
+      console.log(event.changedTouches[0].clientX);
+//      console.log(event.changedTouches[0].clientX);
+      this.preClientX = event.changedTouches[0].clientX;
+    },
+
+    move(event){
+      event = event || window.event;
+      // 获取触发事件元素
+//      var touchpage = event.target.offsetparent; // 判断target是不是entries-page;
+//      console.log(event);
+//      console.log(touchpage);
+//      console.log(event.touches);
+//      console.log(event.targettouches);
+
+
+      // 计算手指移动距离
+      var currentx = event.changedTouches[0].clientX;
+      console.log(this.preClientX);
+      console.log('df', currentx);
+      var movex = this.preClientX - currentx;
+      console.log('mx: ', movex);
+      console.log(document.documentElement.clientWidth);
+      var siblingx = document.documentElement.clientWidth - Math.abs(movex);
+
+      // 计算兄弟元素的translatex的距离
+      if (movex < 0) {
+        siblingx = -siblingx;
+      }
+
+
+      // 获取.entries-page元素
+      var touchpage = event.target;
+      if (!touchpage.classList.contains('entries-page')) {
+        touchpage = touchpage.offsetParent;
+      }
+
+      // 获取兄弟元素
+      var sibling = touchpage.nextElementSibling || touchpage.previousElementSibling;
+
+
+      // 更改元素的transform
+      touchpage.style.transform = 'translate3d(-' + movex + 'px, 0, 0)';
+
+      sibling.style.transform = 'translate3d(' + siblingx + 'px, 0, 0)';
+
+
+
+
+    },
+
+
+
+
 
   }
 
@@ -391,34 +480,77 @@ export default {
 
   /* 分类 */
   .entries {
-    /*.entries-page {
+    background-color: #fff;
+    position: relative;
+    height: pxToRem(354px);
+    .entries-page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      /* TODO: transform渲染效率比定位高??? */
+      transform: translateX(-100%);
+      /*top: 0;*/
+      /*left: 0;*/
+      &.active {
+        display: block;
+        transform: none;
+      }
 
-
-
-      @include flex-content(space-around);
-
-      .entries-item {
-        width: 25%;
-        margin-top: pxToRem(22px);
+        &::after {
+          content: '';
+          display: table;
+          clear: both;
+        }
 
         a {
-
+          display: block;
+          float: left;
+          width: 25%;
+          text-align: center;
+          margin-top: pxToRem(22px);
           img {
             width: pxToRem(90px);
             height: pxToRem(90px);
           }
         }
 
+    }
+
+    .dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        background-color: #ccc;
+        &.active {
+          background-color: #555;
+        }
       }
 
-
-
-
-
-    } */
+    }
 
 
   }
+
+  /* 推荐商家 */
+  h3.list-title {
+    margin-top: pxToRem(20px);
+    font-weight: 600;
+    @include font-dpr(16px);
+
+    @include property-of-rem(padding, 32px, 20px, 0px);
+    background-color: #fff;
+
+    
+  }
+
 
 
 </style>

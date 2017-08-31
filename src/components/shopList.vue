@@ -1,10 +1,6 @@
 <template>
-  <div>
-    <h3>我是商家列表</h3>
+  <div class="shopList">
 
-    <div>
-      <router-link :to="{path: 'shop', query:{geohash:'weyuiu', id: '123'}}" >商家</router-link>
-    </div>
   </div>
 
 
@@ -12,6 +8,38 @@
 
 
 <script type="text/ecmascript-6">
+
+import {
+  getShopList,
+} from '@/data/getData';
+
+import {
+  getImgPath
+} from '@/common/function';
+
+
+export default {
+  name: 'shopList',
+  data() {
+    return {
+      shops:[], // 商铺列表
+    }
+  },
+
+  mounted() {
+    getShopList(0).then(respnse => {
+      this.shops = respnse;
+    }).catch(error => {
+
+      //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
+//       console.log('商家列表');
+//       console.log(error);
+    })
+  },
+
+  mixins: [getImgPath],
+
+}
 
 </script>
 

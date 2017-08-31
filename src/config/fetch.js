@@ -79,7 +79,8 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
       method: type,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+
       },
       mode: 'cors', // cors模式我们通常用作跨域请求来从第三方提供的API获取数据。
       // mode属性用来决定是否允许跨域请求，以及哪些response属性可读.
@@ -153,10 +154,6 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
 
     })
   }
-
-
-
-
 
 }
 

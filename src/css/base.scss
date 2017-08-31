@@ -20,11 +20,13 @@ html {
   -webkit-font-smoothing: antialiased;
   text-size-adjust: none;
 
+  // MDN
+  touch-action: manipulation;
 }
 
 a {
   text-decoration: none;
-  color: #333;
+  color: inherit;
 }
 
 img {
