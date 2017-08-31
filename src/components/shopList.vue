@@ -171,6 +171,7 @@ export default {
   /* 商家列表 */
   .shop-list {
     background-color: #fff;
+    margin-bottom: pxToRem(100px);
 
     /* 列表项 */
     .list-item {
