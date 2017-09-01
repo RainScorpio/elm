@@ -55,7 +55,7 @@
 
       <div class="entries">
 
-        <div>
+        <div class="entry-wrap" @touchstart="start" @touchmove="move">
           <!-- 分类第一页 -->
           <div class="entries-page  active">
 
@@ -306,7 +306,6 @@ export default {
 //   })
   },
 
-
   methods: {
     // 在模板中只能用vue实例的方法, 不能直接用js方法.
     // 可以使用mixins中的getImgPath替代.
@@ -315,44 +314,40 @@ export default {
     start: function (event) {
 
       event = event || window.event;
-      // 获取.entries-page元素
+//      // 获取.entries-page元素
       var touchPage = event.target;
       if (!touchPage.classList.contains('entries-page')) {
+        // offsetParent代表找到离元素最近的祖先元素.
         touchPage = touchPage.offsetParent;
       }
       var sibling = touchPage.nextElementSibling || touchPage.previousElementSibling;
       sibling.style.display = 'block';
 
-      console.log('dfwe');
-      console.log(event.changedTouches[0].clientX);
 //      console.log(event.changedTouches[0].clientX);
+//
       this.preClientX = event.changedTouches[0].clientX;
+
     },
 
     move(event){
       event = event || window.event;
-      // 获取触发事件元素
-//      var touchpage = event.target.offsetparent; // 判断target是不是entries-page;
-//      console.log(event);
-//      console.log(touchpage);
-//      console.log(event.touches);
-//      console.log(event.targettouches);
-
 
       // 计算手指移动距离
       var currentx = event.changedTouches[0].clientX;
-      console.log(this.preClientX);
-      console.log('df', currentx);
+//      console.log(this.preClientX);
+//      console.log('df', currentx);
       var movex = this.preClientX - currentx;
-      console.log('mx: ', movex);
-      console.log(document.documentElement.clientWidth);
+//      console.log('mx: ', movex);
+
       var siblingx = document.documentElement.clientWidth - Math.abs(movex);
 
       // 计算兄弟元素的translatex的距离
       if (movex < 0) {
         siblingx = -siblingx;
+        movex = Math.abs(movex);
+      } else {
+        movex = -movex;
       }
-
 
       // 获取.entries-page元素
       var touchpage = event.target;
@@ -364,23 +359,28 @@ export default {
       var sibling = touchpage.nextElementSibling || touchpage.previousElementSibling;
 
 
+      console.log(movex);
+      console.log(siblingx);
+
       // 更改元素的transform
-      touchpage.style.transform = 'translate3d(-' + movex + 'px, 0, 0)';
+      touchpage.style.transform = 'translate3d(' + movex + 'px, 0, 0)';
 
       sibling.style.transform = 'translate3d(' + siblingx + 'px, 0, 0)';
 
-
-
-
     },
+
+    end: function (event) {
+
+
+
+
+    }
 
 
 
 
 
   }
-
-
 
 }
 
@@ -488,38 +488,46 @@ export default {
       background-color: #fff;
       position: relative;
       height: pxToRem(354px);
-      .entries-page {
-        position: absolute;
-        width: 100%;
+
+      .entry-wrap {
+        position: relative;
+        overflow: hidden;
         height: 100%;
-        display: none;
-        /* TODO: transform渲染效率比定位高??? */
-        transform: translateX(-100%);
-        /*top: 0;*/
-        /*left: 0;*/
-        &.active {
-          display: block;
-          transform: none;
-        }
 
-          &::after {
-            content: '';
-            display: table;
-            clear: both;
-          }
-
-          a {
+        .entries-page {
+          /* 使用绝对定位的方式, 让元素脱离文本流, 这样在手指拖动元素时, 才不会将整体页面一起拖动.*/
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: none;
+          /* TODO: transform渲染效率比定位高??? */
+          transform: translateX(-100%);
+          /*top: 0;*/
+          /*left: 0;*/
+          &.active {
             display: block;
-            float: left;
-            width: 25%;
-            text-align: center;
-            margin-top: pxToRem(22px);
-            img {
-              width: pxToRem(90px);
-              height: pxToRem(90px);
-            }
+            transform: none;
           }
 
+            &::after {
+              content: '';
+              display: table;
+              clear: both;
+            }
+
+            a {
+              display: block;
+              float: left;
+              width: 25%;
+              text-align: center;
+              margin-top: pxToRem(22px);
+              img {
+                width: pxToRem(90px);
+                height: pxToRem(90px);
+              }
+            }
+
+        }
       }
 
       .dots {
@@ -540,6 +548,8 @@ export default {
         }
 
       }
+
+
 
 
     }
