@@ -11,7 +11,6 @@
             <i class="fa fa-map-marker"></i>
             <span>{{locationName}}</span>
             <i class="fa fa-caret-down"></i>
-
           </div>
 
           <div class="weather">
@@ -60,7 +59,9 @@
           <div class="entries-page  active">
 
             <router-link to="" v-for="(n, index) in 8" :key="index">
-              <img :src="getImgPath(entries[index].image_hash, '90x90')" alt="">
+              <!-- 报错:Error in render function: "TypeError: Cannot read property 'image_hash' of undefined"
+  但是页面依然可以出现. -->
+              <img :src="imgURL(entries[index].image_hash, '90x90')" alt="">
               <p>{{entries[index].name}}</p>
 
             </router-link>
@@ -111,7 +112,6 @@
 
   </div>
 </template>
-
 
 <script type="text/ecmascript-6">
 import {
@@ -413,7 +413,8 @@ export default {
         &>.location-name {
           @include flex-content(flex-start);
 
-          @include font-dpr(18px);
+          /*<!--@include font-dpr(18px);-->*/
+          font-size: pxToRem(36px);
           font-weight: 700;
           width: 60%;
           @include property-of-rem(height,69px);
@@ -433,7 +434,9 @@ export default {
         /* 天气 */
         & .weather {
           @include flex-content();
-          @include font-dpr(12px);
+          /*<!--@include font-dpr(12px);-->*/
+          font-size: pxToRem(24px);
+          text-align: right;
          img {
             @include property-of-rem(width, 55px);
             @include property-of-rem(height, 55px);
@@ -449,7 +452,8 @@ export default {
           width: 100%;
           @include property-of-rem(height, 72px);
           @include flex-content(center);
-          @include font-dpr(13px);
+          /*<!--@include font-dpr(13px);-->*/
+          font-size: pxToRem(26px);
           background-color: #fff;
           color: rgb(102, 102, 102);
           span {
@@ -460,9 +464,8 @@ export default {
 
       /* 热门搜索词汇 */
       & .hot {
-
-
         padding-bottom: pxToRem(10px);
+        font-size: pxToRem(24px);
 
         .keyword {
           white-space: nowrap;
@@ -521,6 +524,7 @@ export default {
               width: 25%;
               text-align: center;
               margin-top: pxToRem(22px);
+              font-size: pxToRem(24px);
               img {
                 width: pxToRem(90px);
                 height: pxToRem(90px);
@@ -558,7 +562,8 @@ export default {
     h3.list-title {
       margin-top: pxToRem(20px);
       font-weight: 600;
-      @include font-dpr(16px);
+      /*<!--@include font-dpr(16px);-->*/
+      font-size: pxToRem(32px);
 
       @include property-of-rem(padding, 32px, 20px, 0px);
       background-color: #fff;

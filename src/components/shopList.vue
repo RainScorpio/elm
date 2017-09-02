@@ -206,7 +206,8 @@ export default {
       a {
         display: block;
         @include flex-content(space-between, flex-start);
-        @include font-dpr(11px);
+        /*<!--@include font-dpr(11px);-->*/
+        font-size: pxToRem(22px);
         color: #666;
         /* 商家商标图片 */
         .shop-logo {
@@ -227,10 +228,12 @@ export default {
         .shop-message {
           width: pxToRem(580px);
           @include property-of-rem(padding, 30px, 20px, 30px, 0px);
+          /* 可以让flex-item的宽度随着flex-container的宽度变化变化.*/
+          flex-grow: 1;
 
           /* 商家基本信息 */
           .shop-base {
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #aaa;
             margin-bottom: pxToRem(10px);
 
             .base-first, .base-second, .base-third {
@@ -244,7 +247,8 @@ export default {
               /* 商家名称 */
               .shop-name {
                 color: #333;
-                @include font-dpr(15px);
+                /*<!--@include font-dpr(15px);-->*/
+                font-size: pxToRem(30px);
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -255,7 +259,8 @@ export default {
               .supports {
                 span.sup {
                   color: #999;
-                  @include font-dpr(12px);
+                  /*<!--@include font-dpr(12px);-->*/
+                  font-size: pxToRem(24px);
                   border: 1px solid rgb(221, 221, 221);
                   border-radius: pxToRem(4px);
                   color: rgb(153, 153, 153);
@@ -275,7 +280,8 @@ export default {
 
               .bird {
                 color: #fff;
-                @include font-dpr(10px);
+                /*<!--@include font-dpr(10px);-->*/
+                font-size: pxToRem(20px);
                 background-image: linear-gradient(45deg, #0085ff, #0af);
                 border-radius: pxToRem(4px);
                 border: 1px solid rgb(68, 165, 255);
@@ -319,10 +325,12 @@ export default {
                 @include flex-content(flex-start);
 
                 margin-top: pxToRem(5px);
-                @include font-dpr(13px);
+                /*<!--@include font-dpr(13px);-->*/
+                font-size: pxToRem(26px);
 
                 .icon_name {
-                  @include font-dpr(12px);
+                  /*<!--@include font-dpr(12px);-->*/
+                  font-size: pxToRem(24px);
                   margin-right: pxToRem(12px);
                   border-radius: pxToRem(4px);
                   width: pxToRem(32px);
@@ -362,32 +370,19 @@ export default {
       }
 
 
-
-
-
-
-
     }
 
 
     /* 加载动画 */
     .loader-wrapper {
       color: #555;
-      @include font-dpr(13px);
+      /*<!--@include font-dpr(13px);-->*/
+      font-size: pxToRem(26px);
       text-align: center;
       min-height: pxToRem(80px);
       line-height: pxToRem(80px);
     }
 
-
-
-
-
-
   }
-
-
-
-
 
 </style>

@@ -39,7 +39,17 @@
 
 // 动态写入样式
 // 计算1rem的值
-    var rem = html.clientWidth / 10; // 网上做法是html.clientWidth * dpr / 10, 但前提是clientWidth为375. 所以进行改进 1rem = 物理像素 / 10 (10也可以是其他的数值);
+    var rem = 75;
+    // 通过分析饿了么官网的页面, 发现屏幕宽度大于1242时, rem都等于108
+    if (html.clientWidth < 1242) {
+      rem = html.clientWidth / 10; // 网上做法是html.clientWidth * dpr / 10, 但前提是clientWidth为375. 所以进行改进 1rem = 物理像素 / 10 (10也可以是其他的数值);
+    } else {
+      rem = 108;
+    }
+
+
+    console.log(html.clientWidth);
+    console.log(html.offsetWidth);
 
     // 设置根元素的字体大小
     html.style.fontSize = rem + 'px';

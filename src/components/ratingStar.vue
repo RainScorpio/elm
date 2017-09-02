@@ -49,7 +49,8 @@
     position: relative;
     height: pxToRem(20px);
     width: pxToRem(112px);
-    @include font-dpr(10px);
+    /*<!--@include font-dpr(10px);-->*/
+    font-size: pxToRem(20px);
 
     .star-grey {
       color: #ddd;
