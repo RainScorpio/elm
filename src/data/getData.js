@@ -43,6 +43,15 @@ export const getShopList = (offset) => fetch('/shopping/restaurants', {
   terminal: 'h5'
 });
 
+// 获取商家页面中商家的信息
+
+export const getShopMessage = (id) => fetch('/shopping/restaurant/' + id, {
+  'extras[]': 'activities',
+  'extras[]': 'albums',
+  'extras[]':'license',
+  'extras[]': 'identification',
+  'extras[]': 'qualification'
+});
 
 
 

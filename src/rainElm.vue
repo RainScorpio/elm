@@ -9,28 +9,28 @@
 
 
 
-    <div id="footer">
-      <router-link to="/msite" class="active" @click.native="toggle">
-        <i class="fa fa-edge"></i>
-        <span>外卖</span>
-      </router-link>
+    <!--<div id="footer">-->
+      <!--<router-link to="/msite" class="active" @click.native="toggle">-->
+        <!--<i class="fa fa-edge"></i>-->
+        <!--<span>外卖</span>-->
+      <!--</router-link>-->
 
-      <router-link to="/discover" @click.native="toggle">
-        <i class="fa fa-safari"></i>
-        <span>发现</span>
-      </router-link>
+      <!--<router-link to="/discover" @click.native="toggle">-->
+        <!--<i class="fa fa-safari"></i>-->
+        <!--<span>发现</span>-->
+      <!--</router-link>-->
 
-      <router-link to="/order" @click.native="toggle">
-        <i class="fa fa-file-text-o"></i>
-        <span>订单</span>
-      </router-link>
+      <!--<router-link to="/order" @click.native="toggle">-->
+        <!--<i class="fa fa-file-text-o"></i>-->
+        <!--<span>订单</span>-->
+      <!--</router-link>-->
 
-      <router-link to="/profile" @click.native="toggle">
-        <i class="fa fa-user-o"></i>
-        <span>我的</span>
+      <!--<router-link to="/profile" @click.native="toggle">-->
+        <!--<i class="fa fa-user-o"></i>-->
+        <!--<span>我的</span>-->
 
-      </router-link>
-    </div>
+      <!--</router-link>-->
+    <!--</div>-->
   </div>
 
 </template>

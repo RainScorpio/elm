@@ -1,21 +1,21 @@
 <template>
   <div id="rain-footer">
-    <router-link to="/msite" class="active" @click.native="toggle">
+    <router-link to="/msite" :class="{active: isMsite}" @click.native="toggle">
       <i class="fa fa-edge"></i>
       <span>外卖</span>
     </router-link>
 
-    <router-link to="/discover" @click.native="toggle">
+    <router-link to="/discover" :class="{active: isDiscover}" @click.native="toggle">
       <i class="fa fa-safari"></i>
       <span>发现</span>
     </router-link>
 
-    <router-link to="/order" @click.native="toggle">
+    <router-link to="/order" :class="{active: isOrder}" @click.native="toggle">
       <i class="fa fa-file-text-o"></i>
       <span>订单</span>
     </router-link>
 
-    <router-link to="/profile" @click.native="toggle">
+    <router-link to="/profile" :class="{active: isProfile}" @click.native="toggle">
       <i class="fa fa-user-o"></i>
       <span>我的</span>
 
@@ -28,19 +28,42 @@
 
   export default {
     name: 'footer',
+    data(){
+      return {
+        isMsite: false,
+        isDiscover: false,
+        isOrder: false,
+        isProfile: false,
+      };
+    },
 
     created() {
-      console.log('我是rainElm的created');
-    },
-    beforeMount() {
-      console.log('我是rainElm的beforeMount');
-    },
-    mounted() {
-      console.log('我是rainElm的mounted');
-    },
+      console.log('我是footer 的 created');
+      console.log(this.$route.path);
+      let footerItem = this.$route.path.substr(1, this.$route.path.length-1);
+      // 判断当前是哪个页面
+      switch (footerItem) {
+        case 'msite':
+          this.isMsite = true;
+          break;
+        case 'discover':
+          this.isDiscover = true;
+          break;
+        case 'order':
+          this.isOrder = true;
+          break;
+        case 'profile':
+          this.isProfile = true;
+          break;
+        default:
+          this.isMsite = true;
+      }
 
+    },
 
     methods: {
+
+      // 将底部写成组件后, 添加到父组件中, 就不能使用点击事件的切换active类的方法了.
       toggle(ev) {
         console.log('foooter');
         ev = ev || window.event;
@@ -67,7 +90,7 @@
 
   @import "../css/mixin";
 
-  #footer {
+  #rain-footer {
     position: fixed;
     bottom: 0;
     left: 0;

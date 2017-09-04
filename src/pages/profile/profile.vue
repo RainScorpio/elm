@@ -1,9 +1,19 @@
 <template>
-  <p>我是我的页面</p>
+  <div>
+    <p>我是我的页面</p>
+    <rain-footer></rain-footer>
+  </div>
+
 </template>
 
 
 <script type="text/ecmascript-6">
+  import rainFooter from '@/components/footer';
+  export default {
+    components: {
+      rainFooter,
+    }
+  }
 
 </script>
 

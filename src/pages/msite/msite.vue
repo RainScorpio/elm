@@ -107,7 +107,6 @@
 
     </div>
 
-
     <!-- 无法获取定位信息 -->
     <div v-else>
       <!-- 头部 -->
@@ -144,8 +143,14 @@
 
     </div>
 
+    <rain-footer></rain-footer>
+
+
 
   </div>
+
+
+
 </template>
 
 <script type="text/ecmascript-6">
@@ -164,6 +169,7 @@ import {
 } from '@/common/function';
 
 import shopList from '@/components/shopList';
+import rainFooter from '@/components/footer';
 
 
 
@@ -189,7 +195,7 @@ export default {
   },
   components: {
     shopList,
-
+    rainFooter,
   },
 
 
@@ -291,7 +297,6 @@ export default {
         this.geohash = response.geohash;
 //        this.SAVE_GEOHASH(response.geohash);
         this.$store.commit('SAVE_GEOHASH', response.geohash);
-
 
       }, function (va) {
         // 报错信息
