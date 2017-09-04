@@ -19,7 +19,7 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
   var lat = getStore('latitude');
   var lon = getStore('longitude');
 
-  console.log('store', lat);
+  // console.log('store', lat);
 
   // if (!lat || !lon) {
   //   const position = await getPosition();

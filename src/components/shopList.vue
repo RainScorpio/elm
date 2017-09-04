@@ -1,9 +1,17 @@
 <template>
   <div class="shop-list">
 
+
     <!-- 商家列表 -->
     <section v-for="shop in shops" :key="shop.id" class="list-item">
-      <router-link to="">
+      <router-link :to="{
+      path:'/shop',
+      query:
+        {
+          geohash,
+          id: shop.id
+        }
+    }">
         <!-- 商标 -->
         <div class="shop-logo">
           <div class="logo-img">
@@ -119,7 +127,9 @@ import {
   getImgPath
 } from '@/common/function';
 
-import ratingStar from '@/components/ratingStar'
+import ratingStar from '@/components/ratingStar';
+
+import {mapState} from 'vuex';
 
 
 export default {
@@ -130,9 +140,28 @@ export default {
       activeShow: false,
     }
   },
+
+  /* 方式1: 使用父子组件传递数据. */
+  props: ['geohashProps'],
+
   components: {
     ratingStar
   },
+
+  computed: {
+//    TODO: ... 是对象展开运算符的意思, 处于提案阶段
+
+    /* 方式2: 使用mapState(可以获取多个数据), 从store中获取. (需要从引入vuex)*/
+    ...mapState(['geohash']),
+
+    /* 方式3: 使用计算属性从store中获取单独的数据*/
+    geohashFun() {
+      console.log('geo()');
+      console.log(this.$store.state.geohash);
+      return this.$store.state.geohash;
+    }
+  },
+
 
   beforeMount() {
 

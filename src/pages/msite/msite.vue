@@ -59,12 +59,12 @@
 
       <div class="entries">
 
-        <div class="entry-wrap" @touchstart="start" @touchmove="move">
+        <div class="entry-wrap" @touchstart="start" @touchmove="move"  v-if="entries.length">
           <!-- 分类第一页 -->
           <div class="entries-page  active">
             <router-link to="" v-for="(n, index) in 8" :key="index">
               <!-- 报错:Error in render function: "TypeError: Cannot read property 'image_hash' of undefined"
-  但是页面依然可以出现. -->
+  但是页面依然可以出现. 添加v-if="entries.length"判断-->
               <img :src="imgURL(entries[index].image_hash, '90x90')" alt="">
               <p>{{entries[index].name}}</p>
 
@@ -101,7 +101,7 @@
 
       <!-- 商家列表 组件-->
       <!-- 商家列表 组件结束-->
-      <shop-list></shop-list>
+      <shop-list :geohashProps="geohash"></shop-list>
 
 
 
@@ -183,6 +183,7 @@ export default {
       hotSearchWords: [], // 热门搜索词汇
       entries: [], // 首页分类
       preClientX: 0, // 记录手指移动时上一次的位置.
+      geohash: ''
 
     }
   },
@@ -287,8 +288,10 @@ export default {
         this.locationName = response.name;
         this.hasData = true;
 
-        this.SAVE_GEOHASH = response.geohash;
-        console.log('s', this.SAVE_GEOHASH);
+        this.geohash = response.geohash;
+//        this.SAVE_GEOHASH(response.geohash);
+        this.$store.commit('SAVE_GEOHASH', response.geohash);
+
 
       }, function (va) {
         // 报错信息

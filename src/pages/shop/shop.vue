@@ -2,6 +2,8 @@
 
   <div>
 
+    <p @click="goBack">返回</p>
+
     <div>
 
     </div>
@@ -14,6 +16,14 @@
 
 <script type="text/ecmascript-6">
 
+  export default {
+
+    methods: {
+      goBack:function() {
+        this.$router.go(-1);
+      }
+    }
+  }
 </script>
 
 <style lang="scss">

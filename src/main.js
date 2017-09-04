@@ -4,7 +4,7 @@
 import Vue from 'vue';
 import router from './router';
 import Resource from 'vue-resource';
-import vuexStore from './vuex-store';
+import store from './vuex-store';
 import '@/css/index.scss'; // 引入样式表
 import './common/rem.js'; // 引入rem布局
 
@@ -16,7 +16,7 @@ Vue.config.productionTip = false;
 new Vue ({
   el: '#rain',
   router,
-  vuexStore,
+  store,
   // template: '<RainElm></RainElm>',
   // components: {
   //   RainElm
