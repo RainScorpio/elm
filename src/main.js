@@ -14,7 +14,7 @@ Vue.use(Resource);
 Vue.config.productionTip = false;
 
 new Vue ({
-  el: '#rain-elm',
+  el: '#rain',
   router,
   vuexStore,
   // template: '<RainElm></RainElm>',

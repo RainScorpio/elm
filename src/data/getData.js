@@ -3,18 +3,17 @@
  */
 import fetch from '@/config/fetch';
 
-// // 获取定位坐标
-// export const getPosition = function () {
-//
-//   console.log('this');
-//   console.log(this);
-//   return  navigator.geolocation ? new Promise(function (resolve, reject) {
-//
-//     navigator.geolocation.getCurrentPosition(resolve, reject, {timeout: 10000,maximumAge:1e4});
-//
-//   }) : Promise.reject();
-//
-// };
+// 获取定位
+export const getPosition = function () {
+
+  return  navigator.geolocation ? new Promise(function (resolve, reject) {
+
+    navigator.geolocation.getCurrentPosition(resolve, reject, {timeout: 10000,maximumAge:1e4});
+
+  }) : Promise.reject();
+
+};
+
 
 // 获取地址数据
 export const getAddress = function () {

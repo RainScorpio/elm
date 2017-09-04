@@ -1,6 +1,9 @@
 <template>
-  <div class="msite">
+  <div id="msite">
 
+    <!-- 使用导航后加载数据 -->
+    <!-- 会先加载组件 msite, 但是如果没有v-if控制, div.wrap 是不会显示, 并且组件也不会加载在父组件内. 只有获取到数据后, 才会加载组件.  -->
+    <!-- 但是如果用v-if判断的话, 就会加载msite组件, 并根据值判断是否显示 -->
     <div class="wrap" v-if="hasData">
       <!-- 头部 -->
       <header class="msite-header">
@@ -35,6 +38,8 @@
         </div>
         <!-- 搜索 结束-->
 
+
+
         <!-- 热门搜索词汇 -->
         <div class="hot">
 
@@ -57,7 +62,6 @@
         <div class="entry-wrap" @touchstart="start" @touchmove="move">
           <!-- 分类第一页 -->
           <div class="entries-page  active">
-
             <router-link to="" v-for="(n, index) in 8" :key="index">
               <!-- 报错:Error in render function: "TypeError: Cannot read property 'image_hash' of undefined"
   但是页面依然可以出现. -->
@@ -99,15 +103,46 @@
       <!-- 商家列表 组件结束-->
       <shop-list></shop-list>
 
+
+
     </div>
 
 
+    <!-- 无法获取定位信息 -->
+    <div v-else>
+      <!-- 头部 -->
+      <header class="msite-header">
+
+        <!-- 地址天气 -->
+        <div class="header-top">
+          <div class="location-name">
+            <i class="fa fa-map-marker"></i>
+            <span>{{locationName}}</span>
+            <!--<span>获取地址中...</span>-->
+            <i class="fa fa-caret-down"></i>
+          </div>
+        </div>
+        <!-- 地址天气 结束-->
+        <!-- 搜索 -->
+        <div class="search">
+          <router-link to="" class="link">
+            <i class="fa fa-search"></i>
+            <span>搜索商家, 商品名称</span>
+          </router-link>
+        </div>
+        <!-- 搜索 结束-->
+      </header>
+      <!-- 头部 结束 -->
+
+
+      <div class="no-shop" v-if="hasPositionError">
+        <img src="https://fuss10.elemecdn.com/6/87/4efda8c6bf4734d39faf86fe190c3gif.gif" alt="" style="width: 50%;">
+      </div>
 
 
 
 
-
-
+    </div>
 
 
   </div>
@@ -120,15 +155,16 @@ import {
   getWeather,
   getHotSearchWords,
   getEntries,
-  getShopList,
 } from '@/data/getData';
 
 import {
   getImageURL,
-  getImgPath
+  getImgPath,
+  setStore
 } from '@/common/function';
 
 import shopList from '@/components/shopList';
+
 
 
 export default {
@@ -136,9 +172,8 @@ export default {
   data() {
     return {
       hasData: false,
-      latitude: 0,
-      longitude: 0,
-      locationName: '获取地址中', // 当前定位地址名称
+      hasPositionError: false,
+      locationName: '获取地址中...', // 当前定位地址名称
       locationAddress: '', // 当前定位地址
       locationCity: '', // 当前定位城市
       weather:{},
@@ -147,18 +182,24 @@ export default {
       error: '',
       hotSearchWords: [], // 热门搜索词汇
       entries: [], // 首页分类
-
       preClientX: 0, // 记录手指移动时上一次的位置.
+
     }
   },
   components: {
-    shopList
+    shopList,
+
   },
+
 
   mixins: [getImgPath],
 
-
-
+  created() {
+    console.log('我是msite的cretaed');
+  },
+  beforeMount() {
+    console.log('我是msite的beforeMount');
+  },
 
   // 只有在模板加载完成之后, 改变vue实例中的数据, 才能通知视图进行改变.
   // 简单例子:
@@ -174,52 +215,32 @@ export default {
    * this.lat 还是2.333
    *
    * */
-  mounted() {
+  async mounted() {
 
-    // 获取定位信息
-    getAddress().then(response => {
+    // 获取定位
+    console.log('我是msite的mounted');
 
-      this.locationName = response.name;
+    // 使用promise对象, 先获取定位坐标, 然后根据坐标获取地址信息.
+
+    try{
+      // 如果 getPosition() 出错, 那么就不会执行下一句语句, 而是转向catch
+      var position = await getPosition();
+
       this.hasData = true;
+      setStore('latitude', position.coords.latitude);
+      setStore('longitude', position.coords.longitude);
+      this.initData();
 
-      this.SAVE_GEOHASH = response.geohash;
-      console.log('s', this.SAVE_GEOHASH);
+    } catch (error){
 
-    }, function (va) {
-      // 报错信息
-//       console.log('va');
-//       console.log(va);
-    });
+      this.hasPositionError = true;
 
-
-    // 获取天气信息
-     getWeather().then(response => {
-        this.weather = response;
-        this.temperature = response.temperature;
-        this.description = response.description;
-     }).catch(
-       reject => {
-//         console.log('weather');
-//         console.log(reject);
-       }
-     );
-
-//     const weather = getweather(this.latitude, this.longitude);
-//     console.log(weather);
-//     this.temperature = weather.temperature;
-//     this.description = weather.description;
+//     console.log('sdf');
+      console.log(error.code);
+      console.log(error.message);
 
 
-     // 获取热门搜索词汇
-     getHotSearchWords().then(response => {
-       this.hotSearchWords = response;
-     });
-
-     // 获取首页分类
-     getEntries().then(response => {
-        this.entries = response[0].entries;
-
-     });
+    }
 
 
 
@@ -227,89 +248,85 @@ export default {
 
 
     // 使用promise对象, 先获取定位坐标, 然后根据坐标获取地址信息.
-//   getposition().then((position)=>{
-//     this.latitude = position.coords.latitude;
-//     this.longitude = position.coords.longitude;
+//   getPosition().then((position)=>{
 //
-//     console.log(this.latitude);
-//     console.log(this.longitude);
+//     this.hasData = true;
+//     setStore('latitude', position.coords.latitude);
+//     setStore('longitude', position.coords.longitude);
 //
-//   }, function (error) {
+//   }, (error) => {
+//     this.hasPositionError = true;
+//
 ////     console.log('sdf');
-////     console.log(error.code);
-////     console.log(error.message);
-//
+//     console.log(error.code);
+//     console.log(error.message);
 //
 //   }).then(()=>{
 //
-//     if (!this.latitude) {
-//       this.latitude = -180;
-//       this.longitude = -180;
-//       this.error = '附近没有外卖商家';
+//     if (!this.hasData) {
 //       return;
 //     }
 //
-//     // 获取定位信息
-//     getaddress(this.latitude, this.longitude).then(response => {
+//     this.initData();
 //
-//       this.locationname = response.name;
-//
-//       this.save_geohash = response.geohash;
-//       console.log('s', this.save_geohash);
-//
-//     }, function (va) {
-//       // 报错信息
-////       console.log('va');
-////       console.log(va);
-//     });
-//
-//     // 获取天气信息
-//     getweather(this.latitude, this.longitude).then(response => {
-//
-//        this.temperature = response.temperature;
-//        this.description = response.description;
-//     }).catch(
-//       reject => {
-////         console.log('weather');
-////         console.log(reject);
-//       }
-//     );
-//
-////     const weather = getweather(this.latitude, this.longitude);
-////     console.log(weather);
-////     this.temperature = weather.temperature;
-////     this.description = weather.description;
-//
-//
-//     // 获取热门搜索词汇
-//     gethotsearchwords(this.latitude, this.longitude).then(response => {
-//       this.hotsearchwords = response;
-//     });
-//
-//     // 获取首页分类
-//     getentries(this.latitude, this.longitude).then(response => {
-//        this.entries = response[0].entries;
-//
-//     });
-//
-//
-//     getshoplist(this.latitude, this.longitude, 0).then(respnse => {
-//        this.shops = respnse;
-//     }).catch(error => {
-//
-//       //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
-////       console.log('商家列表');
-////       console.log(error);
-//     })
-//
-//
-//   })
+//   });
+
+   console.log('msite mounted end');
   },
 
   methods: {
     // 在模板中只能用vue实例的方法, 不能直接用js方法.
     // 可以使用mixins中的getImgPath替代.
     imgURL: getImageURL,
+
+    initData() {
+      console.log('initData');
+      // 获取定位信息
+      getAddress().then(response => {
+
+        this.locationName = response.name;
+        this.hasData = true;
+
+        this.SAVE_GEOHASH = response.geohash;
+        console.log('s', this.SAVE_GEOHASH);
+
+      }, function (va) {
+        // 报错信息
+//       console.log('va');
+//       console.log(va);
+      });
+
+
+      // 获取天气信息
+      getWeather().then(response => {
+        this.weather = response;
+        this.temperature = response.temperature;
+        this.description = response.description;
+      }).catch(
+        reject => {
+//         console.log('weather');
+//         console.log(reject);
+        }
+      );
+
+//     const weather = getweather(this.latitude, this.longitude);
+//     console.log(weather);
+//     this.temperature = weather.temperature;
+//     this.description = weather.description;
+
+
+      // 获取热门搜索词汇
+      getHotSearchWords().then(response => {
+        this.hotSearchWords = response;
+      });
+
+      // 获取首页分类
+      getEntries().then(response => {
+        this.entries = response[0].entries;
+
+      });
+
+    },
 
     start: function (event) {
 
@@ -393,8 +410,7 @@ export default {
   @import "../../css/mixin";
 
 
-  .msite {
-
+  #msite {
 
 
    /* msite页的头部 */
@@ -569,6 +585,15 @@ export default {
       background-color: #fff;
 
 
+    }
+
+
+    /* 获取不到定位信息的时候. */
+    .no-shop {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80%;
     }
 
   }

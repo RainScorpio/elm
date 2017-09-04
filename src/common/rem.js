@@ -47,10 +47,6 @@
       rem = 108;
     }
 
-
-    console.log(html.clientWidth);
-    console.log(html.offsetWidth);
-
     // 设置根元素的字体大小
     html.style.fontSize = rem + 'px';
 

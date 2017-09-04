@@ -5,16 +5,6 @@ import {baseURL} from './env'; // 获取域名地址
 import {setStore, getStore} from '@/common/function';
 
 
-const getPosition = function () {
-
-  return  navigator.geolocation ? new Promise(function (resolve, reject) {
-
-    navigator.geolocation.getCurrentPosition(resolve, reject, {timeout: 10000,maximumAge:1e4});
-
-  }) : Promise.reject();
-
-};
-
 /**
  * 封装异步请求方法fetch
  * async 函数 是 ES7 中的函数, 是General函数的语法糖, 是一个协程
@@ -25,20 +15,22 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
   type = type.toUpperCase();
   url = baseURL + url; // 拼接路径
 
-  // 获取定位坐标
+  // 从本地存储中获取定位坐标
   var lat = getStore('latitude');
   var lon = getStore('longitude');
 
-  if (!lat || !lon) {
-    const position = await getPosition();
-    lat = position.coords.latitude;
-    lon = position.coords.longitude;
-    // console.log('sdf');
-    // console.log(lat);
-    // console.log(lon);
-    setStore('latitude', lat);
-    setStore('longitude', lon);
-  }
+  console.log('store', lat);
+
+  // if (!lat || !lon) {
+  //   const position = await getPosition();
+  //   lat = position.coords.latitude;
+  //   lon = position.coords.longitude;
+  //   // console.log('sdf');
+  //   // console.log(lat);
+  //   // console.log(lon);
+  //   setStore('latitude', lat);
+  //   setStore('longitude', lon);
+  // }
 
   data.latitude = lat;
   data.longitude = lon;

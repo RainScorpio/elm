@@ -33,9 +33,6 @@
 
     },
 
-    created() {
-      console.log(this.rating);
-    }
   }
 
 
