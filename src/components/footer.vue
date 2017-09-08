@@ -38,8 +38,6 @@
     },
 
     created() {
-//      console.log('我是footer 的 created');
-//      console.log(this.$route.path);
       let footerItem = this.$route.path.substr(1, this.$route.path.length-1);
       // 判断当前是哪个页面
       switch (footerItem) {

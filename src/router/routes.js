@@ -10,17 +10,25 @@ import RainElm from '../rainElm.vue';
 // （代码分块）需要独立打包、异步加载的代码，使用require.ensure
 // 资料网址 http://www.cnblogs.com/lvdabao/p/5953884.html
 
-const Msite = r => require.ensure([], ()=>r(require('pages/msite/msite')), 'msite');
-const Discover = r => require.ensure([], ()=>r(require('pages/discover/discover')), 'discover');
-const Order = r => require.ensure([], ()=>r(require('pages/order/order')), 'order');
-const Profile = r => require.ensure([], ()=>r(require('pages/profile/profile')), 'profile');
+// const Msite = r => require.ensure([], ()=>r(require('pages/msite/msite')), 'msite');
+// const Discover = r => require.ensure([], ()=>r(require('pages/discover/discover')), 'discover');
+// const Order = r => require.ensure([], ()=>r(require('pages/order/order')), 'order');
+// const Profile = r => require.ensure([], ()=>r(require('pages/profile/profile')), 'profile');
 
-const Shop = r => require.ensure([], () => r(require('pages/shop/shop')), 'shop');
+// const Shop = r => require.ensure([], () => r(require('pages/shop/shop')), 'shop');
+
+const Msite = () => import(/*webpackChunkName: "msite"*/ 'pages/msite/msite');
+const Discover = () => import(/*webpackChunkName: "discover"*/ 'pages/discover/discover');
+const Order = () => import(/*webpackChunkName: "order"*/'pages/order/order');
+const Profile = () => import(/*webpackChunkName: "profile"*/'pages/profile/profile');
+const Shop = () => import(/*webpackChunkName: "shop"*/'pages/shop/shop');
+
 
 
 export default [
   {
     path: '/',
+
     component: RainElm,
     children: [
       {

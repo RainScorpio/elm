@@ -2,7 +2,6 @@
  * Created by rain on 2017/8/23.
  */
 import {baseURL} from './env'; // 获取域名地址
-import {setStore, getStore} from '@/common/function';
 
 
 /**
@@ -15,31 +14,6 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
   type = type.toUpperCase();
   url = baseURL + url; // 拼接路径
 
-  // 从本地存储中获取定位坐标
-  var lat = getStore('latitude');
-  var lon = getStore('longitude');
-
-  // console.log('store', lat);
-
-  // if (!lat || !lon) {
-  //   const position = await getPosition();
-  //   lat = position.coords.latitude;
-  //   lon = position.coords.longitude;
-  //   // console.log('sdf');
-  //   // console.log(lat);
-  //   // console.log(lon);
-  //   setStore('latitude', lat);
-  //   setStore('longitude', lon);
-  // }
-
-  data.latitude = lat;
-  data.longitude = lon;
-
-
-
-
-
-  // console.log(data);
 
   // 为了 79 行的时候使用.
   if (type === 'GET') {
@@ -92,7 +66,7 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
 
       const response = await fetch(url, requestConfig);
 
-      const responseJSON = await response.json();
+      const responseJSON = response.json();
 
       return responseJSON;
 
@@ -148,4 +122,3 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
   }
 
 }
-

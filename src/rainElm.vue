@@ -3,9 +3,9 @@
 
   <div id="rain-elm">
 
-    <div id="content">
+
       <router-view></router-view>
-    </div>
+
 
 
 

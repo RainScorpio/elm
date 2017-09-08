@@ -67,12 +67,12 @@ export const setStore = (name, content) => {
 
   }
 
-  window.sessionStorage.setItem(name, content);
+  window.localStorage.setItem(name, content);
 
 };
 
 // 获取localStorage
 export const getStore = name => {
   if (!name) return;
-  return window.sessionStorage.getItem(name);
-}
+  return window.localStorage.getItem(name);
+};
