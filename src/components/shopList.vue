@@ -1,6 +1,5 @@
 <template>
-  <div class="shop-list">
-
+  <div class="shop-list" v-show="shops.length">
 
     <!-- 商家列表 -->
     <section v-for="shop in shops" :key="shop.id" class="list-item">
@@ -152,7 +151,7 @@ export default {
 //    TODO: ... 是对象展开运算符的意思, 处于提案阶段
 
     /* 方式2: 使用mapState(可以获取多个数据), 从store中获取. (需要从引入vuex)*/
-    ...mapState(['geohash']),
+    ...mapState(['geohash', 'location']),
 
     /* 方式3: 使用计算属性从store中获取单独的数据*/
     geohashFun() {
@@ -163,20 +162,18 @@ export default {
   },
 
 
-  beforeMount() {
-
-
-
-  },
 
   mounted() {
-    getShopList(0).then(respnse => {
+
+    console.log('shopList mounted');
+
+    getShopList(this.location.latitude, this.location.longitude, 0).then(respnse => {
       this.shops = respnse;
     }).catch(error => {
 
       //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
-//       console.log('商家列表');
-//       console.log(error);
+      console.log(error);
+
     })
   },
 

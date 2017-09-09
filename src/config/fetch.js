@@ -48,7 +48,7 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
         'Content-Type': 'application/json',
 
       },
-      mode: 'cors', // cors模式我们通常用作跨域请求来从第三方提供的API获取数据。
+      mode: 'no-cors', // cors模式我们通常用作跨域请求来从第三方提供的API获取数据。
       // mode属性用来决定是否允许跨域请求，以及哪些response属性可读.
       cache: 'force-cache' // 缓存策略  force-cache: 强制缓存
     }
@@ -122,3 +122,4 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
   }
 
 }
+

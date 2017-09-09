@@ -3,3 +3,5 @@
  */
 
 export const SAVE_GEOHASH = 'SAVE_GEOHASH';
+
+export const SAVE_LOCATION = 'SAVE_LOCATION';

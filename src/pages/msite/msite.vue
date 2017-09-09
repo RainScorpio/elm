@@ -224,16 +224,16 @@ export default {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       };
+
       setStore('location', this.location);
+
 
     } catch (error){
 
       // TODO 3. 失败 就从本地读取坐标
       this.location = getStore('location');
-
       console.log(error.code);
       console.log(error.message);
-
     }
 
     // 判断是否获取到定位坐标
@@ -242,11 +242,23 @@ export default {
       return;
     }
 
-    // 根据定位坐标获取数据.
-    this.initData();
+    this.$store.commit('SAVE_LOCATION', this.location);
+
 
   },
 
+  watch: {
+
+    // 观察location属性值是否发生改变, 如果改变就重新请求数据.
+    location: function (newValue, oldValue) {
+      console.log('newValue', newValue);
+      console.log('oldValue', oldValue);
+
+      // 根据定位坐标获取数据.
+      this.initData();
+    }
+
+  },
 
 
 
@@ -262,11 +274,20 @@ export default {
 
       // 获取地址信息
       getAddress(this.location.latitude, this.location.longitude).then(response => {
-        this.locationName = response.locationName;
+
+        this.locationName = response.name;
+
+        // 将geohash的值存入状态中.
+        this.$store.commit('SAVE_GEOHASH', response.geohash);
+        // 将geohash的值存入本地
+//        var location = getStore('location');
+//        location.geohash = response.geohash;
+
       }).catch(error => {
 
         this.locationName = '地址出错了';
         console.log('地址信息获取不到');
+        console.log(error);
         this.showMain = false;
 
       });
@@ -488,7 +509,6 @@ export default {
         .keyword {
           white-space: nowrap;
           overflow-x: auto;
-          height: pxToRem(72px);
 
           a {
             color: #fff;
