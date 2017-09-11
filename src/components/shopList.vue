@@ -141,7 +141,7 @@ export default {
   },
 
   /* 方式1: 使用父子组件传递数据. */
-  props: ['geohashProps'],
+  props: ['geohashProps', 'locationProps'],
 
   components: {
     ratingStar
@@ -161,20 +161,28 @@ export default {
     }
   },
 
+  watch: {
+    // 监测状态中的location, 发生变化就重新获取数据
+    location(newValue) {
+      console.log('监测');
+      getShopList(this.locationProps.latitude, this.locationProps.longitude, 0).then(respnse => {
+        this.shops = respnse;
+      }).catch(error => {
+
+        //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
+        console.log(error);
+
+      })
+    }
+  },
 
 
   mounted() {
 
     console.log('shopList mounted');
+    console.log(this.locationProps);
 
-    getShopList(this.location.latitude, this.location.longitude, 0).then(respnse => {
-      this.shops = respnse;
-    }).catch(error => {
 
-      //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
-      console.log(error);
-
-    })
   },
 
   methods: {

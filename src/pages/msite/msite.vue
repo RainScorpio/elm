@@ -70,18 +70,17 @@
         </header>
         <!-- 头部 结束 -->
 
-        <!-- 分类 -->
 
         <div v-if="showMain">
 
           <!-- 分类 -->
           <div class="entries" v-show="entries">
 
-            <div class="entry-wrap" @touchstart="start" @touchmove="move" @touchend="end"  v-if="entries.length">
+            <div class="entry-wrap" @touchstart="start" @touchmove="move" @touchend="endOrCancel"  v-if="entries.length">
 
 
               <!-- 分类第一页 -->
-              <div class="entries-page  active">
+              <div class="entries-page active" >
                 <router-link to="" v-for="(n, index) in 8" :key="index">
                   <!-- 报错:Error in render function: "TypeError: Cannot read property 'image_hash' of undefined"
       但是页面依然可以出现. 添加v-if="entries.length"判断-->
@@ -103,9 +102,6 @@
 
               </div>
 
-
-
-
             </div>
 
             <div class="dots">
@@ -124,7 +120,7 @@
           <h3 class="list-title">推荐商家</h3>
 
           <!-- 商家列表 组件-->
-          <shop-list :geohashProps="geohash"></shop-list>
+          <shop-list :geohashProps="geohash" :locationProps="location"></shop-list>
           <!-- 商家列表 组件结束-->
 
 
@@ -180,12 +176,17 @@ export default {
       showPosition: false, // 显示选择收货地址界面
       location: {}, // 存储 获取到的定位信息
       locationName: '获取地址中...', // 当前定位地址名称
+      geohash: '',
       temperature: '', // 天气气温
       description: '', // 天气描述
       hotSearchWords: [], // 热门搜索词汇
       entries: [], // 首页分类
       preClientX: 0, // 记录手指移动时上一次的位置.
-      geohash: '',
+      touchPage: null, // 记录手指触摸的元素
+      touchPageSibling: null, //记录手指触摸的兄弟元素.
+      touchPageX: 0, // 记录手指触摸到元素的X.
+      touchPageSiblingX: 0, // 记录触摸元素兄弟元素的X.
+
     }
   },
   components: {
@@ -219,19 +220,20 @@ export default {
       // TODO 1. 获取定位坐标
       let position = await getPosition();
 
+
       // TODO 2. 成功则 赋值并保存在本地
       this.location = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       };
 
-      setStore('location', this.location);
-
 
     } catch (error){
 
       // TODO 3. 失败 就从本地读取坐标
-      this.location = getStore('location');
+
+
+      this.location = JSON.parse(getStore('location'));
       console.log(error.code);
       console.log(error.message);
     }
@@ -241,8 +243,9 @@ export default {
       this.showMain = false;
       return;
     }
+    console.log('commit');
+    console.log(this.location);
 
-    this.$store.commit('SAVE_LOCATION', this.location);
 
 
   },
@@ -254,14 +257,13 @@ export default {
       console.log('newValue', newValue);
       console.log('oldValue', oldValue);
 
+      this.$store.commit('SAVE_LOCATION', newValue);
+      setStore('location', this.location);
       // 根据定位坐标获取数据.
       this.initData();
     }
 
   },
-
-
-
 
   methods: {
     // 在模板中只能用vue实例的方法, 不能直接用js方法.
@@ -271,7 +273,8 @@ export default {
     // 获取数据
     initData() {
       console.log('initData');
-
+      console.log(this.location.latitude);
+      console.log(typeof this.location);
       // 获取地址信息
       getAddress(this.location.latitude, this.location.longitude).then(response => {
 
@@ -329,34 +332,35 @@ export default {
     },
 
 
-    start: function (event) {
+    start: (event) => {
 
       event = event || window.event;
 //      // 获取.entries-page元素
       var touchPage = event.target;
+
       if (!touchPage.classList.contains('entries-page')) {
         // offsetParent代表找到离元素最近的祖先元素.
         touchPage = touchPage.offsetParent;
       }
-      var sibling = touchPage.nextElementSibling || touchPage.previousElementSibling;
-      sibling.style.display = 'block';
+      this.touchPage = touchPage;
+      this.touchPageSibling = touchPage.nextElementSibling || touchPage.previousElementSibling;
+
+      this.touchPageSibling.style.display = 'block';
 
 //      console.log(event.changedTouches[0].clientX);
 //
+      console.log('preClientX',event.changedTouches[0].clientX);
       this.preClientX = event.changedTouches[0].clientX;
 
     },
 
-    move(event){
+    move: ()=>{
       event = event || window.event;
 
       // 计算手指移动距离
       var currentx = event.changedTouches[0].clientX;
-//      console.log(this.preClientX);
-//      console.log('df', currentx);
+      console.log('currentx', currentx);
       var movex = this.preClientX - currentx;
-//      console.log('mx: ', movex);
-
       var siblingx = document.documentElement.clientWidth - Math.abs(movex);
 
       // 计算兄弟元素的translatex的距离
@@ -367,29 +371,64 @@ export default {
         movex = -movex;
       }
 
-      // 获取.entries-page元素
-      var touchpage = event.target;
-      if (!touchpage.classList.contains('entries-page')) {
-        touchpage = touchpage.offsetParent;
-      }
-
-      // 获取兄弟元素
-      var sibling = touchpage.nextElementSibling || touchpage.previousElementSibling;
-
-
       console.log(movex);
       console.log(siblingx);
 
       // 更改元素的transform
-      touchpage.style.transform = 'translate3d(' + movex + 'px, 0, 0)';
-
-      sibling.style.transform = 'translate3d(' + siblingx + 'px, 0, 0)';
+      this.touchPage.style.transform = 'translate3d(' + movex + 'px, 0, 0)';
+      this.touchPageSibling.style.transform = 'translate3d(' + siblingx + 'px, 0, 0)';
+      this.touchPageSiblingX = siblingx;
+      this.touchPageX = movex;
 
     },
 
-    end: function (event) {
+    endOrCancel: () => {
+//      console.log('end');
+//      console.log(this.touchPageX);
+//      console.log(this.touchPageSiblingX);
+//      console.log(this.touchPage);
+//      console.log(this.touchPageSibling);
 
 
+      // 元素样式字符串.
+      var touchPageStyle = '';
+      var touchPageSiblingStyle = '';
+
+
+      // 设置过渡时间
+      this.touchPage.setAttribute('style', 'transition: transform 300ms ease-in-out;');
+      this.touchPageSibling.setAttribute('style', 'display: block;transition: transform 300ms ease-in-out;');
+
+
+      if (Math.abs(this.touchPageX) < Math.abs(this.touchPageSiblingX)) {
+        console.log('if');
+
+        touchPageStyle = this.touchPage.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
+        touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d(750px, 0px, 0px);';
+
+
+
+      } else {
+        console.log('else');
+
+        touchPageStyle = this.touchPage.getAttribute('style') + ';transform: translate3d(750px, 0px, 0px);';
+        touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
+
+      }
+
+      var timerFirstId = setTimeout(()=> {
+        this.touchPage.setAttribute('style', touchPageStyle);
+        this.touchPageSibling.setAttribute('style', touchPageSiblingStyle);
+        clearTimeout(timerFirstId);
+      }, 5);
+
+      var timerId = setTimeout(()=>{
+        this.touchPage.setAttribute('style', '');
+        this.touchPageSibling.setAttribute('style', '');
+        this.touchPage.classList.toggle('active');
+        this.touchPageSibling.classList.toggle('active');
+        clearTimeout(timerId);
+      }, 300);
 
 
     }
