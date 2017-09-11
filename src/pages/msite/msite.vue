@@ -359,35 +359,31 @@ export default {
 
       // 计算手指移动距离
       var currentx = event.changedTouches[0].clientX;
-      console.log('currentx', currentx);
+
+
+
       var movex = this.preClientX - currentx;
-      var siblingx = document.documentElement.clientWidth - Math.abs(movex);
 
       // 计算兄弟元素的translatex的距离
-      if (movex < 0) {
-        siblingx = -siblingx;
-        movex = Math.abs(movex);
-      } else {
-        movex = -movex;
+      var siblingx = 0;
+      if (movex < 0) { // 代表向右滑动, mx为负, tpx为正, 等于-mx, tpsx为负, 等于750-Math.abs(mx)之后取负值.
+        siblingx = -document.documentElement.clientWidth - movex;
+
+      } else { // 代表向左滑动, mx为正, tpx为负, 等于-mx, tpsx为正, 等于750-mx
+        siblingx = document.documentElement.clientWidth - movex;
       }
 
-      console.log(movex);
-      console.log(siblingx);
+      this.touchPageX = -movex;
+      this.touchPageSiblingX = siblingx;
 
       // 更改元素的transform
-      this.touchPage.style.transform = 'translate3d(' + movex + 'px, 0, 0)';
-      this.touchPageSibling.style.transform = 'translate3d(' + siblingx + 'px, 0, 0)';
-      this.touchPageSiblingX = siblingx;
-      this.touchPageX = movex;
+      this.touchPage.style.transform = 'translate3d(' + this.touchPageX + 'px, 0, 0)';
+      this.touchPageSibling.style.transform = 'translate3d(' + this.touchPageSiblingX + 'px, 0, 0)';
+
 
     },
 
     endOrCancel: () => {
-//      console.log('end');
-//      console.log(this.touchPageX);
-//      console.log(this.touchPageSiblingX);
-//      console.log(this.touchPage);
-//      console.log(this.touchPageSibling);
 
 
       // 元素样式字符串.
@@ -400,35 +396,52 @@ export default {
       this.touchPageSibling.setAttribute('style', 'display: block;transition: transform 300ms ease-in-out;');
 
 
+      // 计算两个页面移动的距离
       if (Math.abs(this.touchPageX) < Math.abs(this.touchPageSiblingX)) {
         console.log('if');
 
         touchPageStyle = this.touchPage.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
-        touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d(750px, 0px, 0px);';
 
+        var x = 750;
+        if (this.touchPageX > 0) { // 向右滑
+          x = -750;
+        }
+
+        touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d('+x+'px, 0px, 0px);';
 
 
       } else {
         console.log('else');
 
-        touchPageStyle = this.touchPage.getAttribute('style') + ';transform: translate3d(750px, 0px, 0px);';
+        var x = -750;
+        if (this.touchPageX > 0) { // 向右滑
+          x = 750;
+        }
+
+        touchPageStyle = this.touchPage.getAttribute('style') + 'display: block;transform: translate3d('+x+'px, 0px, 0px);';
         touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
+
+        this.touchPage.classList.remove('active');
+        this.touchPageSibling.classList.add('active');
+        document.getElementsByClassName('dot')[0].classList.toggle('active');
+        document.getElementsByClassName('dot')[1].classList.toggle('active');
 
       }
 
+
+      // 5毫秒后再设置transform, 否则没有过渡
       var timerFirstId = setTimeout(()=> {
         this.touchPage.setAttribute('style', touchPageStyle);
         this.touchPageSibling.setAttribute('style', touchPageSiblingStyle);
         clearTimeout(timerFirstId);
       }, 5);
 
+      // 305毫秒后再清除所有的内联样式
       var timerId = setTimeout(()=>{
         this.touchPage.setAttribute('style', '');
         this.touchPageSibling.setAttribute('style', '');
-        this.touchPage.classList.toggle('active');
-        this.touchPageSibling.classList.toggle('active');
         clearTimeout(timerId);
-      }, 300);
+      }, 305);
 
 
     }
