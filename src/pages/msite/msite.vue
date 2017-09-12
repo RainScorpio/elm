@@ -243,11 +243,6 @@ export default {
       this.showMain = false;
       return;
     }
-    console.log('commit');
-    console.log(this.location);
-
-
-
   },
 
   watch: {
@@ -301,9 +296,7 @@ export default {
         this.weather = response;
         this.temperature = response.temperature;
         this.description = response.description;
-      }).catch(
-        reject => {
-
+      }).catch(reject => {
          console.log(reject);
         }
       );
@@ -349,21 +342,21 @@ export default {
 
 //      console.log(event.changedTouches[0].clientX);
 //
-      console.log('preClientX',event.changedTouches[0].clientX);
+//      console.log('preClientX',event.changedTouches[0].clientX);
       this.preClientX = event.changedTouches[0].clientX;
 
     },
 
     move: ()=>{
+
+
       event = event || window.event;
+
+      event.preventDefault();
 
       // 计算手指移动距离
       var currentx = event.changedTouches[0].clientX;
-
-
-
       var movex = this.preClientX - currentx;
-
       // 计算兄弟元素的translatex的距离
       var siblingx = 0;
       if (movex < 0) { // 代表向右滑动, mx为负, tpx为正, 等于-mx, tpsx为负, 等于750-Math.abs(mx)之后取负值.
@@ -372,13 +365,20 @@ export default {
       } else { // 代表向左滑动, mx为正, tpx为负, 等于-mx, tpsx为正, 等于750-mx
         siblingx = document.documentElement.clientWidth - movex;
       }
-
       this.touchPageX = -movex;
       this.touchPageSiblingX = siblingx;
+
+//      window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+//
+//      window.requestAnimationFrame(()=>{
+//
+//      });
 
       // 更改元素的transform
       this.touchPage.style.transform = 'translate3d(' + this.touchPageX + 'px, 0, 0)';
       this.touchPageSibling.style.transform = 'translate3d(' + this.touchPageSiblingX + 'px, 0, 0)';
+
+
 
 
     },
@@ -402,31 +402,29 @@ export default {
 
         touchPageStyle = this.touchPage.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
 
-        var x = 750;
+        var x = document.documentElement.clientWidth;
         if (this.touchPageX > 0) { // 向右滑
-          x = -750;
+          x = -document.documentElement.clientWidth;
         }
 
         touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d('+x+'px, 0px, 0px);';
 
 
-      } else {
+      }
+      else {
         console.log('else');
 
-        var x = -750;
+        var x = -document.documentElement.clientWidth;
         if (this.touchPageX > 0) { // 向右滑
-          x = 750;
+          x = document.documentElement.clientWidth;
         }
 
-        touchPageStyle = this.touchPage.getAttribute('style') + 'display: block;transform: translate3d('+x+'px, 0px, 0px);';
+        touchPageStyle = this.touchPage.getAttribute('style') + 'transform: translate3d('+x+'px, 0px, 0px);';
         touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
 
-        this.touchPage.classList.remove('active');
-        this.touchPageSibling.classList.add('active');
-        document.getElementsByClassName('dot')[0].classList.toggle('active');
-        document.getElementsByClassName('dot')[1].classList.toggle('active');
 
       }
+
 
 
       // 5毫秒后再设置transform, 否则没有过渡
@@ -440,6 +438,15 @@ export default {
       var timerId = setTimeout(()=>{
         this.touchPage.setAttribute('style', '');
         this.touchPageSibling.setAttribute('style', '');
+
+        if(Math.abs(this.touchPageX) > Math.abs(this.touchPageSiblingX)) {
+          this.touchPage.classList.remove('active');
+          this.touchPageSibling.classList.add('active');
+          document.getElementsByClassName('dot')[0].classList.toggle('active');
+          document.getElementsByClassName('dot')[1].classList.toggle('active');
+        }
+
+
         clearTimeout(timerId);
       }, 305);
 

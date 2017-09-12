@@ -1,5 +1,5 @@
 <template>
-  <div class="shop-list" v-show="shops.length">
+  <div class="shop-list" v-show="shops.length" @click="tap">
 
     <!-- 商家列表 -->
     <section v-for="shop in shops" :key="shop.id" class="list-item">
@@ -104,6 +104,7 @@
     </section>
     <!-- 商家列表 结束-->
 
+
     <!-- 加载动画 -->
     <div class="loader-wrapper">
       <i class="fa fa-spinner fa-spin"></i>
@@ -137,6 +138,8 @@ export default {
     return {
       shops:[], // 商铺列表
       activeShow: false,
+      offset: 0, // 加载商铺列表的偏移量
+      ele:null,
     }
   },
 
@@ -165,11 +168,12 @@ export default {
     // 监测状态中的location, 发生变化就重新获取数据
     location(newValue) {
       console.log('监测');
-      getShopList(this.locationProps.latitude, this.locationProps.longitude, 0).then(respnse => {
+      //todo 这里的offset应该设置为0, 还是this.offset???
+      getShopList(this.locationProps.latitude, this.locationProps.longitude,0).then(respnse => {
         this.shops = respnse;
       }).catch(error => {
 
-        //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
+        // todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
         console.log(error);
 
       })
@@ -177,15 +181,33 @@ export default {
   },
 
 
-  mounted() {
-
-    console.log('shopList mounted');
-    console.log(this.locationProps);
-
+  created() {
+    console.log('shopList created');
+    // 在created里面添加监听, 此时this.loadMore才获取到.
+    window.addEventListener('scroll', this.loadMore);
 
   },
 
+  beforeDestroy() {
+    console.log('shopList beforeDestroy');
+    window.removeEventListener('scroll', this.loadMore, false);
+  },
+
+  mounted() {
+
+    this.ele = document.getElementsByClassName('shop-list')[0];
+    console.log(this.ele);
+    console.log('shopList mounted');
+
+  },
+
+
+
   methods: {
+
+    tap() {
+      console.log('点击列表');
+    },
 
     // 送餐距离的单位换算
     shopDistance(distance) {
@@ -195,7 +217,6 @@ export default {
       }
       return str;
     },
-
 
 //    活动数量点击方法
     activityCount: function(ev){
@@ -214,7 +235,63 @@ export default {
 
       }
 
+    },
+
+    // 上拉加载更多页面
+    loadMore(event) {
+      console.log('loadMore');
+      event = event || window.event;
+      // scrollTop + offsetHeight >= scrollHeight 到达尾部
+
+      var el = document.body;
+
+      // 获取元素的scrollTop (滚动出去看不见的高度)
+      var getScrollTop = el.scrollTop;
+      // 获取元素的offsetHeight (可视区域的高度)
+      var getOffSetHeight = el.offsetHeight;
+      // 获取元素内容高度(包括padding) (元素可以滚动的高度)
+      var getScrollHeight = el.scrollHeight;
+
+      var getClientHeight = document.documentElement.clientHeight; // 手机屏幕的像素高度.
+
+
+      console.log('getScrollTop', el.scrollTop);
+      console.log('getOffsetHeight', el.offsetHeight);
+      console.log('getScrollHeight', el.scrollHeight);
+      console.log('getClientHeight', document.documentElement.clientHeight);
+
+
+
+
+      if (getScrollTop + getClientHeight === getScrollHeight) {
+
+        console.log('已经滚动到底部');
+
+
+        // 已经滚动到底部
+        this.offset += 20;
+        getShopList(this.locationProps.latitude, this.locationProps.longitude, this.offset).then(response => {
+          console.log('getShopList');
+          this.shops = this.shops.concat(response);
+//          this.shops =[...this.shops, ...response];
+        }).catch(error => {
+
+          //     todo: 注意catch(实际就是reject回调函数)中写console.log会报错.
+          console.log(error);
+
+        })
+//
+
+      }
+
+
+
     }
+
+
+
+
+
 
   },
 
