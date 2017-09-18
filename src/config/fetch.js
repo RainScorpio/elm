@@ -23,7 +23,6 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
     Object.keys(data).forEach(key=>{
       // 拼接参数
       dataStr += key + '=' + data[key] + '&';
-
     });
 
 

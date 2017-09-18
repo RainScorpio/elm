@@ -48,17 +48,21 @@ export const getShopList = (latitude, longitude, offset) => fetch('/shopping/res
 });
 
 // 获取商家页面中商家的信息
-export const getShopMessage = (id) => fetch('/shopping/restaurant/' + id, {
-  'extras[]': 'activities',
-  'extras[]': 'albums',
-  'extras[]':'license',
-  'extras[]': 'identification',
-  'extras[]': 'qualification'
-});
+export const getShopMessage = (id) => fetch('/shopping/restaurant/' + id + '?extras[]=activities&extras[]=albums&extras[]=license&extras[]=identification&extras[]=qualification'
+);
 
 // 获取商家页面中商品信息
 export const getShopGoods = (id) => fetch('/shopping/v2/menu', {
   'restaurant_id': id,
+});
+
+// 选择收货地址页面, 发送的搜索请求.
+export const getSearchAddress = (keyword, offset, limit, longitude, latitude) => fetch('/bgs/poi/search_poi_nearby', {
+  keyword,
+  offset,
+  limit,
+  longitude,
+  latitude
 });
 
 

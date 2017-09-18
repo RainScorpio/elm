@@ -14,7 +14,7 @@
         <!-- 商标 -->
         <div class="shop-logo">
           <div class="logo-img">
-            <img :src="getImgPath(shop.image_path, '130x130')" alt="shop.name">
+            <img :src="imgURL(shop.image_path, '130x130')" alt="shop.name">
           </div>
 
         </div>
@@ -124,7 +124,7 @@ import {
 } from '@/data/getData';
 
 import {
-  getImgPath
+  mixinOfImgPath
 } from '@/common/function';
 
 import ratingStar from '@/components/ratingStar';
@@ -260,6 +260,12 @@ export default {
       console.log('getScrollHeight', el.scrollHeight);
       console.log('getClientHeight', document.documentElement.clientHeight);
 
+      // 89是i6下的高度
+      if (getScrollTop > 89) {
+
+
+
+      }
 
 
 
@@ -288,14 +294,9 @@ export default {
 
     }
 
-
-
-
-
-
   },
 
-  mixins: [getImgPath],
+  mixins: [mixinOfImgPath],
 
 }
 
@@ -436,11 +437,9 @@ export default {
                 @include flex-content(flex-start);
 
                 margin-top: pxToRem(5px);
-                /*<!--@include font-dpr(13px);-->*/
                 font-size: pxToRem(26px);
 
                 .icon_name {
-                  /*<!--@include font-dpr(12px);-->*/
                   font-size: pxToRem(24px);
                   margin-right: pxToRem(12px);
                   border-radius: pxToRem(4px);

@@ -7,9 +7,30 @@
 
       <!-- 选择收货地址页面 -->
       <transition name="slide">
-        <div class="position">
+        <div class="delivery" v-show="showDelivery">
 
           <rain-header title="选择收货地址"></rain-header>
+
+          <!-- 设置搜索输入框 -->
+          <form class="search-box" @submit="deliverySubmit">
+            <i class="fa fa-search"></i>
+            <input type="search" placeholder="请输入地址" autofocus @change="deliveryInput">
+          </form>
+
+          <section class="current-address">
+            <h4>当前地址</h4>
+            <div class="address-name">
+              <span class="name">{{locationName}}</span>
+              <span class="reposition-button">
+                <i class="fa fa-bullseye"></i>
+                <span>重新定位</span>
+              </span>
+            </div>
+          </section>
+
+
+
+
 
         </div>
       </transition>
@@ -20,10 +41,10 @@
       <main class="main">
 
         <!-- 头部 -->
-        <header class="msite-header">
+        <!--<header class="msite-header">-->
 
           <!-- 地址天气 -->
-          <div class="header-top">
+          <div class="header-top msite-header">
 
             <div class="location-name" @click="selectPosition">
               <i class="fa fa-map-marker"></i>
@@ -45,7 +66,7 @@
           <!-- 地址天气 结束-->
 
           <!-- 搜索 -->
-          <div class="search">
+          <div class="search msite-header" style="position: sticky; top: 0px; z-index: 999">
             <router-link to="" class="link">
               <i class="fa fa-search"></i>
               <span>搜索商家, 商品名称</span>
@@ -56,7 +77,7 @@
 
 
           <!-- 热门搜索词汇 -->
-          <div class="hot">
+          <div class="hot msite-header">
 
             <div class="keyword" v-show="hotSearchWords">
               <router-link to="" v-for="(a, index) in hotSearchWords" :key="index">{{a.word}}</router-link>
@@ -67,7 +88,7 @@
           <!-- 热门搜索词汇 结束-->
 
 
-        </header>
+        <!--</header>-->
         <!-- 头部 结束 -->
 
 
@@ -80,7 +101,7 @@
 
 
               <!-- 分类第一页 -->
-              <div class="entries-page active" >
+              <div class="entries-page" :class="{active: isActive}">
                 <router-link to="" v-for="(n, index) in 8" :key="index">
                   <!-- 报错:Error in render function: "TypeError: Cannot read property 'image_hash' of undefined"
       但是页面依然可以出现. 添加v-if="entries.length"判断-->
@@ -91,11 +112,11 @@
               </div>
 
               <!-- 分类第2页 -->
-              <div class="entries-page">
+              <div class="entries-page" :class="{active: !isActive}">
 
                 <router-link to="" v-for="(n, index) in (entries.length - 8)" :key="index">
 
-                  <img :src="getImgPath(entries[index + 8].image_hash, '90x90')" alt="">
+                  <img :src="imgURL(entries[index + 8].image_hash, '90x90')" alt="">
                   <p>{{entries[index + 8].name}}</p>
                 </router-link>
 
@@ -106,8 +127,8 @@
 
             <div class="dots">
 
-              <div class="dot active"></div>
-              <div class="dot"></div>
+              <div class="dot" :class="{active: isActive}"></div>
+              <div class="dot" :class="{active: !isActive}"></div>
 
             </div>
 
@@ -152,11 +173,11 @@ import {
   getWeather,
   getHotSearchWords,
   getEntries,
+  getSearchAddress,
 } from '@/data/getData';
 
 import {
-  getImageURL,
-  getImgPath,
+  mixinOfImgPath,
   setStore,
   getStore
 } from '@/common/function';
@@ -165,15 +186,13 @@ import shopList from '@/components/shopList';
 import rainFooter from '@/components/footer';
 import rainHeader from '@/components/header';
 
-
-
 export default {
   name: 'msite',
   data() {
     return {
 
       showMain: true, // 是否显示页面主要内容
-      showPosition: false, // 显示选择收货地址界面
+      showDelivery: false, // 显示选择收货地址界面
       location: {}, // 存储 获取到的定位信息
       locationName: '获取地址中...', // 当前定位地址名称
       geohash: '',
@@ -186,6 +205,7 @@ export default {
       touchPageSibling: null, //记录手指触摸的兄弟元素.
       touchPageX: 0, // 记录手指触摸到元素的X.
       touchPageSiblingX: 0, // 记录触摸元素兄弟元素的X.
+      isActive: true, // 判断是否添加active类.
 
     }
   },
@@ -196,7 +216,7 @@ export default {
   },
 
 
-  mixins: [getImgPath],
+  mixins: [mixinOfImgPath],
 
   created() {
     console.log('我是msite的cretaed');
@@ -205,7 +225,6 @@ export default {
   beforeMount() {
     console.log('我是msite的beforeMount');
   },
-
 
   async mounted() {
 
@@ -263,7 +282,7 @@ export default {
   methods: {
     // 在模板中只能用vue实例的方法, 不能直接用js方法.
     // 可以使用mixins中的getImgPath替代.
-    imgURL: getImageURL,
+//    imgURL: getImageURL,
 
     // 获取数据
     initData() {
@@ -318,14 +337,33 @@ export default {
 
     // 地址点击事件.
     selectPosition() {
-
-      this.showPosition = true;
-      console.log('sdf');
-      document.getElementsByClassName('position')[0].style.display = 'block';
+      console.log('select')
+      this.showDelivery = true;
+      console.log(this.showDelivery)
     },
 
+    // 选择收货地址 form submit事件(点击回车时会触发form的提交事件)
+    deliverySubmit() {
+      console.log('触发提交');
+    },
 
-    start: (event) => {
+    // 选择收货地址 input change事件
+    deliveryInput(event) {
+      console.log('sdf');
+      event = event || window.event;
+      console.log(event.target.value);
+      var data = fetch('../../../static/searchAddress.json', {method: 'GET'});
+
+      data.then(response => response.json()).then(add => {
+        console.log(add);
+      }).catch(error=>{
+        console.log(error);
+      })
+
+
+    },
+
+    start: function(event) {
 
       event = event || window.event;
 //      // 获取.entries-page元素
@@ -347,8 +385,7 @@ export default {
 
     },
 
-    move: ()=>{
-
+    move: function(event){
 
       event = event || window.event;
 
@@ -383,13 +420,11 @@ export default {
 
     },
 
-    endOrCancel: () => {
-
+    endOrCancel: async function () {
 
       // 元素样式字符串.
       var touchPageStyle = '';
       var touchPageSiblingStyle = '';
-
 
       // 设置过渡时间
       this.touchPage.setAttribute('style', 'transition: transform 300ms ease-in-out;');
@@ -398,7 +433,6 @@ export default {
 
       // 计算两个页面移动的距离
       if (Math.abs(this.touchPageX) < Math.abs(this.touchPageSiblingX)) {
-        console.log('if');
 
         touchPageStyle = this.touchPage.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
 
@@ -409,11 +443,7 @@ export default {
 
         touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d('+x+'px, 0px, 0px);';
 
-
-      }
-      else {
-        console.log('else');
-
+      } else {
         var x = -document.documentElement.clientWidth;
         if (this.touchPageX > 0) { // 向右滑
           x = document.documentElement.clientWidth;
@@ -422,34 +452,52 @@ export default {
         touchPageStyle = this.touchPage.getAttribute('style') + 'transform: translate3d('+x+'px, 0px, 0px);';
         touchPageSiblingStyle = this.touchPageSibling.getAttribute('style') + ';transform: translate3d(0px, 0px, 0px);';
 
-
       }
 
 
+      var timer01Promise = new Promise((resolve, reject) => {
 
-      // 5毫秒后再设置transform, 否则没有过渡
-      var timerFirstId = setTimeout(()=> {
-        this.touchPage.setAttribute('style', touchPageStyle);
-        this.touchPageSibling.setAttribute('style', touchPageSiblingStyle);
-        clearTimeout(timerFirstId);
-      }, 5);
+        // 5毫秒后再设置transform, 否则没有过渡
+        var timer01Id = setTimeout(()=> {
 
-      // 305毫秒后再清除所有的内联样式
-      var timerId = setTimeout(()=>{
-        this.touchPage.setAttribute('style', '');
-        this.touchPageSibling.setAttribute('style', '');
+          this.touchPage.setAttribute('style', touchPageStyle);
+          this.touchPageSibling.setAttribute('style', touchPageSiblingStyle);
+          console.log('timer01Id', timer01Id);
+          resolve(timer01Id);
+        }, 5);
+      });
+      var timer02Promise = new Promise((resolve, reject) => {
 
-        if(Math.abs(this.touchPageX) > Math.abs(this.touchPageSiblingX)) {
-          this.touchPage.classList.remove('active');
-          this.touchPageSibling.classList.add('active');
-          document.getElementsByClassName('dot')[0].classList.toggle('active');
-          document.getElementsByClassName('dot')[1].classList.toggle('active');
-        }
+        // 305毫秒后再清除所有的内联样式
+        var timer02Id = setTimeout(()=>{
+          this.touchPage.setAttribute('style', '');
+          this.touchPageSibling.setAttribute('style', '');
+
+          if(Math.abs(this.touchPageX) > Math.abs(this.touchPageSiblingX)) {
+            this.isActive = !this.isActive;
+          }
+          console.log('timer02Id', timer02Id);
+
+          resolve(timer02Id);
+
+        }, 300);
 
 
-        clearTimeout(timerId);
-      }, 305);
+      });
 
+      // 执行定时器, 清除定时器.
+      try {
+        const timer01Id = await timer01Promise;
+        console.log('timer01', timer01Id);
+        clearTimeout(timer01Id);
+
+        const timer02Id = await timer02Promise;
+        console.log('timer02', timer02Id);
+        clearTimeout(timer02Id);
+
+      } catch(error) {
+        console.log('timer error', error);
+      }
 
     }
 
@@ -469,18 +517,19 @@ export default {
 
   #msite {
 
+    .slide-enter, .slide-leave-to {
+      transform: translateX(10rem);
+    }
+
     .slide-enter-active, .slide-leave-active {
       transition: all .3s ease;
     }
 
-    .slide-enter, .slide-leave-to {
-      /*<!--transform: translateX(-10rem);-->*/
-      opacity: 1;
+    .slide-enter-to, .slide-leave {
+      transform: translateX(0px);
     }
 
-
-    .position {
-      display: none;
+    .delivery {
       // 背景色遮挡下面的元素
       background-color: #f4f4f4;
       position: fixed;
@@ -491,8 +540,67 @@ export default {
       bottom: 0;
       // 重要
       z-index: 1000;
+      .search-box {
+        position: relative;
+        background-color: #fff;
+        @include property-of-rem('padding', 20px, 30px);
+        input {
+          width: pxToRem(690px);
+          height: pxToRem(72px);
+          background-color: #f2f2f2;
+          @include property-of-rem('padding', 18px, 36px, 18px, 66px);
+          border-radius: pxToRem(2px);
+          font-size: pxToRem(26px);
+
+          outline:none;
+          border: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+        }
+
+        .fa.fa-search {
+          position: absolute;
+          left: pxToRem(52px);
+          top: pxToRem(40px);
+          color: #bbb;
+          font-size: pxToRem(30px);
+        }
 
 
+
+      }
+
+      .current-address {
+        h4 {
+          @include property-of-rem('padding', 30px, 0px, 14px, 30px);
+          color: #666;
+          font-size: pxToRem(26px);
+          line-height: pxToRem(36px);
+        }
+        .address-name {
+          @include flex-content();
+          background-color: #fff;
+          height: pxToRem(88px);
+          @include property-of-rem('padding', 0px, 34px, 0px, 30px);
+          .name {
+            font-size: pxToRem(30px);
+            font-weight: 700;
+            max-width: pxToRem(500px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .reposition-button {
+            color: #2395ff;
+            font-size: pxToRem(28px);
+            line-height: pxToRem(30px);
+
+
+          }
+
+        }
+      }
 
     }
 
@@ -501,12 +609,11 @@ export default {
       background-image: linear-gradient(90deg, #0af, #0085ff);
       color: #fff;
       @include property-of-rem(padding, 20px, 28px);
-
+    }
       /* 地址, 天气 */
-      & > .header-top {
+    .header-top {
         @include flex-content();
-        @include property-of-rem(margin-bottom, 14px);
-
+        padding-bottom: 0px;
         /* 地址 */
         & > .location-name {
           @include flex-content(flex-start);
@@ -544,8 +651,8 @@ export default {
       }
 
       /* 搜索 */
-      & .search {
-        @include property-of-rem(margin-bottom, 14px);
+    .search {
+      margin-top: -1px;
         .link {
           width: 100%;
           @include property-of-rem(height, 72px);
@@ -561,9 +668,10 @@ export default {
       }
 
       /* 热门搜索词汇 */
-      & .hot {
+    .hot {
         padding-bottom: pxToRem(10px);
         font-size: pxToRem(24px);
+        padding-top: 0px;
 
         .keyword {
           white-space: nowrap;
@@ -577,7 +685,6 @@ export default {
 
       }
 
-    }
 
     /* 分类 */
     .entries {
@@ -678,5 +785,7 @@ export default {
 
 
   }
+
+
 
 </style>

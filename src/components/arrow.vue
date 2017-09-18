@@ -37,6 +37,7 @@
     width: pxToRem(40px);
     height: pxToRem(80px);
     text-align: center;
+    color: #fff;
     i.fa {
       font-size: pxToRem(64px);
     }
